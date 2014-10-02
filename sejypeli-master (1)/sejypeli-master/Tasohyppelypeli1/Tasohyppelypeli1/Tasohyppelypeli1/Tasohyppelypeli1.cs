@@ -13,11 +13,14 @@ public class Tasohyppelypeli1 : PhysicsGame
     const int RUUDUN_KOKO = 40;
 
     PlatformCharacter pelaaja1;
+    PlatformCharacter kieltaja;
 
     PhysicsObject alaReuna;
     Image pelaajanKuva = LoadImage("SuS");
     Image tahtiKuva = LoadImage("immeinen");
     Image fedoraKuva = LoadImage("tipsfedora");
+    Image lootanKuva = LoadImage("crate");
+    Image palkinKuva = LoadImage("girder");
 
     SoundEffect maaliAani = LoadSoundEffect("maali");
     Image taustaKuva = LoadImage("katukuva");
@@ -38,9 +41,12 @@ public class Tasohyppelypeli1 : PhysicsGame
     {
         TileMap kentta = TileMap.FromLevelAsset("kentta1");
         kentta.SetTileMethod('#', LisaaTaso);
+        kentta.SetTileMethod('X', LisaaLoota);
+        kentta.SetTileMethod('1', LisaaPalkki);
         kentta.SetTileMethod('*', LisaaTahti);
         kentta.SetTileMethod('N', LisaaPelaaja);
         kentta.SetTileMethod('F', LisaaFedora);
+        kentta.SetTileMethod('K', LisaaKieltaja);
         kentta.Execute(RUUDUN_KOKO, RUUDUN_KOKO);
         Level.Background.Image = (taustaKuva);
         Level.Background.TileToLevel();
@@ -57,6 +63,30 @@ public class Tasohyppelypeli1 : PhysicsGame
         taso.Position = paikka;
         taso.Color = Color.DarkGray;
         Add(taso);
+    }
+
+    void LisaaLoota(Vector paikka, double leveys, double korkeus)
+    {
+        PhysicsObject loota = PhysicsObject.CreateStaticObject(leveys, korkeus);
+        loota.Position = paikka;
+        loota.Image = lootanKuva;
+        Add(loota);
+    }
+
+    void LisaaPalkki(Vector paikka, double leveys, double korkeus)
+    {
+        PhysicsObject palkki = PhysicsObject.CreateStaticObject(leveys, korkeus);
+        palkki.Position = paikka;
+        palkki.Image = palkinKuva;
+        Add(palkki);
+    }
+
+    void LisaaKieltaja(Vector paikka, double leveys, double korkeus)
+    {
+        PlatformCharacter kieltaja = new PlatformCharacter(30, 70);
+        kieltaja.Position = paikka;
+        kieltaja.Tag = "kieltaja";
+
     }
 
     void LisaaTahti(Vector paikka, double leveys, double korkeus)
@@ -86,6 +116,7 @@ public class Tasohyppelypeli1 : PhysicsGame
         AddCollisionHandler(pelaaja1, "tahti", TormaaTahteen);
         Add(pelaaja1);
         AddCollisionHandler(pelaaja1, "alareuna", Tippuminen);
+        
     }
 
     void LisaaNappaimet()
@@ -113,6 +144,8 @@ public class Tasohyppelypeli1 : PhysicsGame
     {
         AloitaAlusta();
     }
+
+    
     void TormaaTahteen(PhysicsObject hahmo, PhysicsObject tahti)
     {
         maaliAani.Play();
@@ -121,6 +154,7 @@ public class Tasohyppelypeli1 : PhysicsGame
     }
     void AloitaAlusta()
     {
+        
         ClearAll();
         LuoKentta();
         LisaaNappaimet();
