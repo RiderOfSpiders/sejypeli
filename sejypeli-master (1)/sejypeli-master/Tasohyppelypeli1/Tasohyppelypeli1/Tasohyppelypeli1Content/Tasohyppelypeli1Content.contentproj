@@ -45,6 +45,11 @@
     <Reference Include="AnimationExtension" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="kieltaja.png">
+      <Name>kieltaja</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Compile Include="maali.wav">
       <Name>maali</Name>
       <Importer>WavImporter</Importer>
@@ -94,13 +99,6 @@
   <ItemGroup>
     <Compile Include="girder.png">
       <Name>girder</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="kieltaja.png">
-      <Name>kieltaja</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

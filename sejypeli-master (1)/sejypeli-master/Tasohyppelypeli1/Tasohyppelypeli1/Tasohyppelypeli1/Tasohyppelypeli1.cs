@@ -13,7 +13,8 @@ public class Tasohyppelypeli1 : PhysicsGame
     const int RUUDUN_KOKO = 40;
 
     PlatformCharacter pelaaja1;
-    PlatformCharacter kieltaja;
+    IntMeter pelastetut;
+    
 
     PhysicsObject alaReuna;
     Image pelaajanKuva = LoadImage("SuS");
@@ -21,6 +22,7 @@ public class Tasohyppelypeli1 : PhysicsGame
     Image fedoraKuva = LoadImage("tipsfedora");
     Image lootanKuva = LoadImage("crate");
     Image palkinKuva = LoadImage("girder");
+    Image kieltajanKuva = LoadImage("kieltaja");
 
     SoundEffect maaliAani = LoadSoundEffect("maali");
     Image taustaKuva = LoadImage("katukuva");
@@ -31,6 +33,7 @@ public class Tasohyppelypeli1 : PhysicsGame
 
         LuoKentta();
         LisaaNappaimet();
+        LuoPisteLaskuri();
 
         Camera.Follow(pelaaja1);
         Camera.ZoomFactor = 1.2;
@@ -86,6 +89,12 @@ public class Tasohyppelypeli1 : PhysicsGame
         PlatformCharacter kieltaja = new PlatformCharacter(30, 70);
         kieltaja.Position = paikka;
         kieltaja.Tag = "kieltaja";
+        kieltaja.Image = kieltajanKuva;
+        Add(kieltaja);
+
+        PlatformWandererBrain tasoAivot = new PlatformWandererBrain();
+        tasoAivot.Speed = 100;
+        kieltaja.Brain = tasoAivot;
 
     }
 
@@ -116,7 +125,8 @@ public class Tasohyppelypeli1 : PhysicsGame
         AddCollisionHandler(pelaaja1, "tahti", TormaaTahteen);
         Add(pelaaja1);
         AddCollisionHandler(pelaaja1, "alareuna", Tippuminen);
-        
+        AddCollisionHandler(pelaaja1, "kieltaja", Kuoleminen);
+        pelaaja1.IgnoresExplosions = true;
     }
 
     void LisaaNappaimet()
@@ -127,7 +137,7 @@ public class Tasohyppelypeli1 : PhysicsGame
         Keyboard.Listen(Key.Left, ButtonState.Down, Liikuta, "Liikkuu vasemmalle", pelaaja1, -nopeus);
         Keyboard.Listen(Key.Right, ButtonState.Down, Liikuta, "Liikkuu vasemmalle", pelaaja1, nopeus);
         Keyboard.Listen(Key.Up, ButtonState.Pressed, Hyppaa, "Pelaaja hyppää", pelaaja1, hyppyNopeus);
-
+        Keyboard.Listen(Key.X, ButtonState.Pressed, Splosion, "Räjähdys");
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
     }
 
@@ -144,13 +154,45 @@ public class Tasohyppelypeli1 : PhysicsGame
     {
         AloitaAlusta();
     }
+    void Kuoleminen(PhysicsObject pelaaja1, PhysicsObject kieltaja)
+    {
+        AloitaAlusta();
+    }
+    void Splosion()
+    {
+        Explosion rajahdys = new Explosion(50);
+        rajahdys.Position = pelaaja1.Position;
+        rajahdys.Speed = 100.0;
+        rajahdys.Force = 10000;
+        rajahdys.ShockwaveColor = new Color(256, 0, 256, 70);
+        rajahdys.AddShockwaveHandler("kieltaja", PaineaaltoOsuu);
+        Add(rajahdys);
+    }
+    void PaineaaltoOsuu(IPhysicsObject kieltaja, Vector shokki)
+    {
+        kieltaja.Destroy();
+    }
 
-    
     void TormaaTahteen(PhysicsObject hahmo, PhysicsObject tahti)
     {
         maaliAani.Play();
         MessageDisplay.Add("SuS pelastaa!");
         tahti.Destroy();
+        pelastetut.Value += 1;
+        if (pelastetut.Value == pelastetut.MaxValue)
+        {
+            KaikkiKeratty();
+        }
+    }
+    void LuoPisteLaskuri()
+    {
+       pelastetut = new IntMeter(0);
+       
+    
+    }
+    void KaikkiKeratty()
+    {
+
     }
     void AloitaAlusta()
     {
