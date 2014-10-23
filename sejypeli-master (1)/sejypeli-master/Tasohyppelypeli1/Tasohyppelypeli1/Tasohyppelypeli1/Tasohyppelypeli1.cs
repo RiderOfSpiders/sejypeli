@@ -14,7 +14,7 @@ public class Tasohyppelypeli1 : PhysicsGame
 
     PlatformCharacter pelaaja1;
     IntMeter pelastetut;
-    
+    int kenttaNro = 1;
 
     PhysicsObject alaReuna;
     Image pelaajanKuva = LoadImage("SuS");
@@ -30,19 +30,19 @@ public class Tasohyppelypeli1 : PhysicsGame
     public override void Begin()
     {
         Gravity = new Vector(0, -1000);
-
-        LuoKentta();
-        LisaaNappaimet();
         LuoPisteLaskuri();
+        LuoKentta("kentta1");
+        LisaaNappaimet();
+        
 
         Camera.Follow(pelaaja1);
         Camera.ZoomFactor = 1.2;
         Camera.StayInLevel = true;
     }
 
-    void LuoKentta()
+    void LuoKentta(string Taso)
     {
-        TileMap kentta = TileMap.FromLevelAsset("kentta1");
+        TileMap kentta = TileMap.FromLevelAsset(Taso);
         kentta.SetTileMethod('#', LisaaTaso);
         kentta.SetTileMethod('X', LisaaLoota);
         kentta.SetTileMethod('1', LisaaPalkki);
@@ -106,6 +106,7 @@ public class Tasohyppelypeli1 : PhysicsGame
         tahti.Image = tahtiKuva;
         tahti.Tag = "tahti";
         Add(tahti);
+        
     }
     void LisaaFedora(Vector paikka, double leveys, double korkeus)
     {
@@ -181,24 +182,38 @@ public class Tasohyppelypeli1 : PhysicsGame
         pelastetut.Value += 1;
         if (pelastetut.Value == pelastetut.MaxValue)
         {
-            KaikkiKeratty();
+            Lapaisy();
         }
     }
     void LuoPisteLaskuri()
     {
        pelastetut = new IntMeter(0);
-       
-    
+       pelastetut.MaxValue = 1;
     }
-    void KaikkiKeratty()
+    void SeuraavaKentta()
     {
+        ClearAll();
+        if (kenttaNro == 1) LuoKentta("kentta1");
+        else if (kenttaNro == 2) LuoKentta("kentta2");
+        else if (kenttaNro > 2) Exit();
 
+        LisaaNappaimet();
+        Camera.Follow(pelaaja1);
+        Camera.ZoomFactor = 1.2;
+        Camera.StayInLevel = true;
+        Gravity = new Vector (0, -1000);
+    }
+    void Lapaisy()
+    {
+        kenttaNro++;
+        SeuraavaKentta();
     }
     void AloitaAlusta()
     {
         
         ClearAll();
-        LuoKentta();
+        if (kenttaNro == 1) LuoKentta("kentta1");
+        else if (kenttaNro == 2) LuoKentta("kentta2");
         LisaaNappaimet();
         Camera.Follow(pelaaja1);
         Camera.ZoomFactor = 1.2;
