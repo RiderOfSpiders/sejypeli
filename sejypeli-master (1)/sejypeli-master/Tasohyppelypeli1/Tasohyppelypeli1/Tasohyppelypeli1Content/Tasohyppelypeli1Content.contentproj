@@ -69,13 +69,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="katukuva.png">
-      <Name>katukuva</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="tipsfedora.png">
       <Name>tipsfedora</Name>
       <Importer>TextureImporter</Importer>
@@ -108,6 +101,48 @@
       <Name>kentta2</Name>
       <Importer>TextFileImporter</Importer>
       <Processor>TextFileContentProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="katukuva.png">
+      <Name>katukuva</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="asvaltti.png">
+      <Name>asvaltti</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="girderpaallys.png">
+      <Name>girderpaallys</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="girderpohja.png">
+      <Name>girderpohja</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="maeyrae_teh_overlord.png">
+      <Name>maeyrae_teh_overlord</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Asetekstuuri.png">
+      <Name>Asetekstuuri</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />

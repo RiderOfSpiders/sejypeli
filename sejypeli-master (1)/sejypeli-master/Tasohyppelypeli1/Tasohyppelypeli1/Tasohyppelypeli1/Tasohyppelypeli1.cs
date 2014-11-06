@@ -15,6 +15,8 @@ public class Tasohyppelypeli1 : PhysicsGame
     PlatformCharacter pelaaja1;
     IntMeter pelastetut;
     int kenttaNro = 1;
+    //LaserGun overlordinAse;
+    //PlatformCharacter overlord;
 
     PhysicsObject alaReuna;
     Image pelaajanKuva = LoadImage("SuS");
@@ -23,6 +25,11 @@ public class Tasohyppelypeli1 : PhysicsGame
     Image lootanKuva = LoadImage("crate");
     Image palkinKuva = LoadImage("girder");
     Image kieltajanKuva = LoadImage("kieltaja");
+    Image tasonKuva = LoadImage("asvaltti");
+    Image pohjanKuva = LoadImage("girderpohja");
+    Image paallyksenKuva = LoadImage("girderpaallys");
+    Image mayranKuva = LoadImage("maeyrae_teh_overlord");
+    Image aseenKuva = LoadImage("Asetekstuuri");
 
     SoundEffect maaliAani = LoadSoundEffect("maali");
     Image taustaKuva = LoadImage("katukuva");
@@ -44,7 +51,10 @@ public class Tasohyppelypeli1 : PhysicsGame
     {
         TileMap kentta = TileMap.FromLevelAsset(Taso);
         kentta.SetTileMethod('#', LisaaTaso);
+        kentta.SetTileMethod('M', LisaaOverlord);
         kentta.SetTileMethod('X', LisaaLoota);
+        kentta.SetTileMethod('Y', LisaaPohja);
+        kentta.SetTileMethod('T', LisaaPaallys);
         kentta.SetTileMethod('1', LisaaPalkki);
         kentta.SetTileMethod('*', LisaaTahti);
         kentta.SetTileMethod('N', LisaaPelaaja);
@@ -57,14 +67,13 @@ public class Tasohyppelypeli1 : PhysicsGame
         alaReuna.IsVisible = false;
         alaReuna.Tag = "alareuna";
 
-      
     }
 
     void LisaaTaso(Vector paikka, double leveys, double korkeus)
     {
         PhysicsObject taso = PhysicsObject.CreateStaticObject(leveys, korkeus);
         taso.Position = paikka;
-        taso.Color = Color.DarkGray;
+        taso.Image = tasonKuva;
         Add(taso);
     }
 
@@ -74,6 +83,20 @@ public class Tasohyppelypeli1 : PhysicsGame
         loota.Position = paikka;
         loota.Image = lootanKuva;
         Add(loota);
+    }
+    void LisaaPohja(Vector paikka, double leveys, double korkeus)
+    {
+        PhysicsObject pohja = PhysicsObject.CreateStaticObject(leveys, korkeus);
+        pohja.Position = paikka;
+        pohja.Image = pohjanKuva;
+        Add(pohja);
+    }
+    void LisaaPaallys(Vector paikka, double leveys, double korkeus)
+    {
+        PhysicsObject paallys = PhysicsObject.CreateStaticObject(leveys, korkeus);
+        paallys.Position = paikka;
+        paallys.Image = paallyksenKuva;
+        Add(paallys);
     }
 
     void LisaaPalkki(Vector paikka, double leveys, double korkeus)
@@ -127,7 +150,48 @@ public class Tasohyppelypeli1 : PhysicsGame
         Add(pelaaja1);
         AddCollisionHandler(pelaaja1, "alareuna", Tippuminen);
         AddCollisionHandler(pelaaja1, "kieltaja", Kuoleminen);
+        AddCollisionHandler(pelaaja1, "REKT", Kuoleminen);
         pelaaja1.IgnoresExplosions = true;
+    }
+    void LisaaOverlord(Vector paikka, double leveys, double korkeus)
+    {
+        PlatformCharacter overlord = new PlatformCharacter(70, 30);
+        overlord.Image = mayranKuva;
+        overlord.Position = paikka;
+        overlord.Mass = 10.0;
+        PlatformWandererBrain tasoAivot = new PlatformWandererBrain();
+        tasoAivot.Speed = 200;
+        overlord.Brain = tasoAivot;
+        tasoAivot.FallsOffPlatforms = false;
+        overlord.Tag = "REKT";
+
+        PlasmaCannon overlordinAse = new PlasmaCannon(30, 10);
+        overlordinAse.InfiniteAmmo = true;
+        overlord.Weapon = overlordinAse;
+        overlord.Weapon.ProjectileCollision = <PhysicsObject,PlatformCharacter>AmmusOsuu;
+        overlord.Walk(-1);
+        overlordinAse.Image = aseenKuva;
+        Add(overlord);
+        
+        
+
+        Timer ajastin = new Timer();
+        ajastin.Interval = 1; 
+        ajastin.Timeout += delegate { Panos(overlordinAse); };
+        ajastin.Start();
+        
+        
+        
+    }
+    void AmmusOsuu(PhysicsObject ammus, PlatformCharacter kohde)
+    {
+        ammus.Destroy();
+        AloitaAlusta();
+    }
+
+    void Panos(PlasmaCannon ase)
+    {
+         ase.Shoot();
     }
 
     void LisaaNappaimet()
@@ -138,7 +202,7 @@ public class Tasohyppelypeli1 : PhysicsGame
         Keyboard.Listen(Key.Left, ButtonState.Down, Liikuta, "Liikkuu vasemmalle", pelaaja1, -nopeus);
         Keyboard.Listen(Key.Right, ButtonState.Down, Liikuta, "Liikkuu vasemmalle", pelaaja1, nopeus);
         Keyboard.Listen(Key.Up, ButtonState.Pressed, Hyppaa, "Pelaaja hyppää", pelaaja1, hyppyNopeus);
-        Keyboard.Listen(Key.X, ButtonState.Pressed, Splosion, "Räjähdys");
+        Keyboard.Listen(Key.Down, ButtonState.Pressed, Splosion, "Räjähdys");
         PhoneBackButton.Listen(ConfirmExit, "Lopeta peli");
     }
 
@@ -179,6 +243,7 @@ public class Tasohyppelypeli1 : PhysicsGame
         maaliAani.Play();
         MessageDisplay.Add("SuS pelastaa!");
         tahti.Destroy();
+        Michaelbay(tahti);
         pelastetut.Value += 1;
         if (pelastetut.Value == pelastetut.MaxValue)
         {
@@ -188,9 +253,16 @@ public class Tasohyppelypeli1 : PhysicsGame
     void LuoPisteLaskuri()
     {
        pelastetut = new IntMeter(0);
-       pelastetut.MaxValue = 1;
+       pelastetut.MaxValue = 3;
     }
-    void SeuraavaKentta()
+    void Michaelbay(PhysicsObject tahti)
+    {
+        Explosion michael = new Explosion(100);
+        michael.Position = tahti.Position;
+        Add(michael);
+    }
+        
+    void SeuraavaKentta() 
     {
         ClearAll();
         if (kenttaNro == 1) LuoKentta("kentta1");
@@ -206,12 +278,14 @@ public class Tasohyppelypeli1 : PhysicsGame
     void Lapaisy()
     {
         kenttaNro++;
+        pelastetut.Value = 0;
         SeuraavaKentta();
     }
     void AloitaAlusta()
     {
         
         ClearAll();
+        pelastetut.Value = 0;
         if (kenttaNro == 1) LuoKentta("kentta1");
         else if (kenttaNro == 2) LuoKentta("kentta2");
         LisaaNappaimet();
